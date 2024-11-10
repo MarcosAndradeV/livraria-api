@@ -40,10 +40,6 @@ func main() {
 	log.Println("Server is starting on port 8000...")
 	router.Run(":8000")
 }
-func exists(path string) bool {
-	_, err := os.Stat(path)
-	return !errors.Is(err, os.ErrNotExist)
-}
 
 var db *sql.DB
 
