@@ -1,11 +1,10 @@
 package main
 
 import (
-	"database/sql"
 	"log"
-
 	"github.com/gin-gonic/gin"
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/livraria/api/database"
+	"database/sql"
 )
 
 type Livro struct {
@@ -24,8 +23,8 @@ type usuarios struct {
 var livros []Livro
 
 func main() {
-	initDB()
-	defer db.Close()
+	database.InitDB()
+	defer database.CloseDB()
 
 	router := gin.Default()
 
@@ -38,71 +37,10 @@ func main() {
 	router.Run(":8000")
 }
 
-var db *sql.DB
 
-func initDB() {
-	var err error
-	db, err = sql.Open("sqlite3", "./biblioteca.db")
-	if err != nil {
-		log.Fatalf("Failed to open database: %v\n", err)
-	}
-
-	if err = db.Ping(); err != nil {
-		log.Fatalf("Cannot connect to database: %v\n", err)
-	}
-	log.Println("Connected to database successfully!")
-
-	createTableLivrosStmt := `
-    CREATE TABLE IF NOT EXISTS livros (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        titulo TEXT NOT NULL,
-        autor TEXT NOT NULL
-    );
-    `
-	_, err = db.Exec(createTableLivrosStmt)
-	if err != nil {
-		log.Printf("Error creating table: %v\nStatement: %s\n", err, createTableLivrosStmt)
-	} else {
-		log.Println("Table 'livros' is ready.")
-	}
-
-	createTableUsuariosStmt := `
-    CREATE TABLE IF NOT EXISTS usuarios (
-        id INTEGER PRIMARY KEY,
-        nome TEXT NOT NULL,
-        email TEXT,
-        telefone TEXT
-    );
-    `
-   	_, err = db.Exec(createTableUsuariosStmt)
-	if err != nil {
-		log.Printf("Error creating table: %v\nStatement: %s\n", err, createTableUsuariosStmt)
-	} else {
-		log.Println("Table 'usuarios' is ready.")
-	}
-
-	createTableEmprestimosStmt := `
-    CREATE TABLE IF NOT EXISTS emprestimos (
-        id INTEGER PRIMARY KEY,
-        id_livro INTEGER NOT NULL,
-        id_usuario INTEGER NOT NULL,
-        data_emprestimo DATE,
-        data_devolucao DATE,
-        FOREIGN KEY (id_livro) REFERENCES livros(id),
-        FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
-    );
-    `
-   	_, err = db.Exec(createTableEmprestimosStmt)
-	if err != nil {
-		log.Printf("Error creating table: %v\nStatement: %s\n", err, createTableEmprestimosStmt)
-	} else {
-		log.Println("Table 'emprestimos' is ready.")
-	}
-
-}
 
 func getLivros(c *gin.Context) {
-
+	db := database.GetDB()
 	rows, err := db.Query("SELECT id, titulo, autor FROM livros")
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -139,7 +77,7 @@ func getLivro(c *gin.Context) {
 
 	param := c.Param("id")
 	var livro Livro
-
+	db := database.GetDB()
 	err := db.QueryRow("SELECT id, titulo, autor FROM livros WHERE id = ?", param).Scan(&livro.ID, &livro.Titulo, &livro.Autor)
 
 	if err != nil {
@@ -168,7 +106,7 @@ func createLivro(c *gin.Context) {
 	log.Printf("ID: %v\n", livro.ID)
 	log.Printf("Titulo: %v\n", livro.Titulo)
 	log.Printf("Autor: %v\n", livro.Autor)
-
+	db := database.GetDB()
 	result, err := db.Exec(
 		"INSERT INTO livros (titulo, autor) VALUES (?, ?)",
 		livro.Titulo,
@@ -191,7 +129,7 @@ func createLivro(c *gin.Context) {
 
 func deleteLivro(c *gin.Context) {
 	param := c.Param("id")
-
+	db := database.GetDB()
 	result, err := db.Exec("DELETE FROM livros WHERE id = ?", param)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "cannot delete livro: " + err.Error()})
