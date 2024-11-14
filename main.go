@@ -9,10 +9,7 @@ import (
 
 	"github.com/livraria/api/controllers"
 	"github.com/livraria/api/database"
-	"github.com/livraria/api/models"
 )
-
-var livros []models.Livro
 
 func main() {
 	database.InitDB()
