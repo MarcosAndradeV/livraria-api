@@ -20,7 +20,7 @@ func main() {
 
 	router.GET("/api/livros/", controllers.GetLivros)
 	router.GET("/api/livros/:id", controllers.GetLivro)
-	router.GET("/api/livros/:title", controllers.GetLivroByTitle)
+	router.GET("/api/livros/titulo/:title", controllers.GetLivroByTitle)
 	router.POST("/api/livros/create", controllers.CreateLivro)
 	router.DELETE("/api/livros/:id", controllers.DeleteLivro)
 
@@ -31,8 +31,8 @@ func main() {
 
 	router.GET("/api/emprestimos/", controllers.GetEmprestimos)
 	router.GET("/api/emprestimos/:usuario", controllers.GetEmprestimosByUsuario)
-	router.POST("/api/emprestimos/create", controllers.CreateGetEmprestimos)
-// router.DELETE("/api/livros/:id", controllers.DeleteLivro)
+	router.POST("/api/emprestimos/create/:usuario/:titulo", controllers.CreateGetEmprestimos)
+    // router.DELETE("/api/livros/:id", controllers.DeleteLivro)
 
 
 	log.Println("Server is starting on port 8000...")

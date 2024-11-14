@@ -142,14 +142,6 @@ func DeleteLivro(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "models.Livro deletado com sucesso"})
 }
 
-/*
-		CREATE TABLE IF NOT EXISTS usuarios (
-	        id INTEGER PRIMARY KEY,
-	        nome TEXT NOT NULL,
-	        email TEXT,
-	        telefone TEXT
-	    );
-*/
 func GetUsuarios(c *gin.Context) {
 	db := database.GetDB()
 	rows, err := db.Query("SELECT nome, email, telefone FROM usuarios")
@@ -188,7 +180,7 @@ func GetUsuariosByName(c *gin.Context) {
 	param := c.Param("nome")
 	var usuario models.Usuario
 	db := database.GetDB()
-	err := db.QueryRow("SELECT nome, email, telefone FROM livros WHERE nome = ?", param).Scan(&usuario.Nome, &usuario.Email, &usuario.Telefone)
+	err := db.QueryRow("SELECT nome, email, telefone FROM usuarios WHERE nome = ?", param).Scan(&usuario.Nome, &usuario.Email, &usuario.Telefone)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -217,7 +209,7 @@ func CreateGetUsuarios(c *gin.Context) {
 
 	db := database.GetDB()
 	result, err := db.Exec(
-		"INSERT INTO usuario (nome, email, telefone) VALUES (?, ?, ?)",
+		"INSERT INTO usuarios (nome, email, telefone) VALUES (?, ?, ?)",
 		usuario.Nome,
 		usuario.Email,
 		usuario.Telefone,
@@ -238,13 +230,12 @@ func CreateGetUsuarios(c *gin.Context) {
 
 }
 
-
 func GetEmprestimos(c *gin.Context) {
 	db := database.GetDB()
 	rows, err := db.Query("SELECT id_livro, id_usuario, data_emprestimo, data_devolucao FROM emprestimos")
 	if err != nil {
 		c.JSON(500, gin.H{
-			"error": "TODO: " + err.Error(),
+			"error": "Não foi possivel selecionar o emprestimo: " + err.Error(),
 		})
 		return
 	}
@@ -258,13 +249,13 @@ func GetEmprestimos(c *gin.Context) {
 		var usuarioId int
 		if err := rows.Scan(&livroId, &usuarioId, &emprestimo.DataEmprestimo, &emprestimo.DataDevolucao); err != nil {
 			c.JSON(500, gin.H{
-				"error": "TODO: " + err.Error(),
+				"error": "Não foi possivel selecionar o emprestimo: " + err.Error(),
 			})
 			return
 		}
-		if err := db.QueryRow("SELECT titulo, autor FROM livros WHERE id = ?", livroId).Scan(&emprestimo.Livro.Titulo, &emprestimo.Livro.Titulo); err != nil {
+		if err := db.QueryRow("SELECT titulo, autor FROM livros WHERE id = ?", livroId).Scan(&emprestimo.Livro.Titulo, &emprestimo.Livro.Autor); err != nil {
 			c.JSON(500, gin.H{
-				"error": "TODO: " + err.Error(),
+				"error": "Não foi possivel selecionar o emprestimo: " + err.Error(),
 			})
 			return
 		}
@@ -278,7 +269,142 @@ func GetEmprestimos(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, usuarios)
+	c.JSON(200, emprestimos)
 }
-func GetEmprestimosByUsuario(c *gin.Context) {}
-func CreateGetEmprestimos(c *gin.Context) {}
+
+func GetEmprestimosByUsuario(c *gin.Context) {
+
+	param := c.Param("usuario")
+	var usuario models.Usuario
+	db := database.GetDB()
+	err := db.QueryRow("SELECT id, nome, email, telefone FROM usuarios WHERE nome = ?", param).Scan(&usuario.ID, &usuario.Nome, &usuario.Email, &usuario.Telefone)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(404, gin.H{
+				"error": "usuario não encontrado" + err.Error(),
+			})
+		} else {
+			c.JSON(500, gin.H{
+				"error": "usuario não pode ser encontrado " + err.Error(),
+			})
+		}
+		return
+	}
+
+	rows, err := db.Query("SELECT id_livro, id_usuario, data_emprestimo, data_devolucao FROM emprestimos WHERE id_usuario = ?", usuario.ID)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": "Não foi possivel selecionar o emprestimo: " + err.Error(),
+		})
+		return
+	}
+	defer rows.Close()
+
+	var emprestimos []models.Emprestimo
+
+	for rows.Next() {
+		var emprestimo models.Emprestimo
+		var usuarioID int
+		var livroId int
+		if err := rows.Scan(&livroId, &usuarioID, &emprestimo.DataEmprestimo, &emprestimo.DataDevolucao); err != nil {
+			c.JSON(500, gin.H{
+				"error": "Não foi possivel selecionar o emprestimo: " + err.Error(),
+			})
+			return
+		}
+		if err := db.QueryRow("SELECT titulo, autor FROM livros WHERE id = ?", livroId).Scan(&emprestimo.Livro.Titulo, &emprestimo.Livro.Autor); err != nil {
+			c.JSON(500, gin.H{
+				"error": "Não foi possivel selecionar o emprestimo: " + err.Error(),
+			})
+			return
+		}
+		emprestimo.Usuario = usuario
+		emprestimos = append(emprestimos, emprestimo)
+	}
+
+	if err := rows.Err(); err != nil {
+		c.JSON(500, gin.H{
+			"error": "error occurred during row iteration: " + err.Error(),
+		})
+		return
+	}
+	if len(emprestimos) > 0 {
+		c.JSON(200, emprestimos)
+
+	} else {
+		c.JSON(200, gin.H{
+			"message": "Sem Emprestimos",
+		})
+	}
+}
+
+func CreateGetEmprestimos(c *gin.Context) {
+	param := c.Param("usuario")
+	var usuario models.Usuario
+	db := database.GetDB()
+	err := db.QueryRow("SELECT id, nome, email, telefone FROM usuarios WHERE nome = ?", param).Scan(&usuario.ID, &usuario.Nome, &usuario.Email, &usuario.Telefone)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(404, gin.H{
+				"error": "usuario não encontrado" + err.Error(),
+			})
+		} else {
+			c.JSON(500, gin.H{
+				"error": "usuario não pode ser encontrado " + err.Error(),
+			})
+		}
+		return
+	}
+	param = c.Param("titulo")
+	var livro models.Livro
+	err = db.QueryRow("SELECT id, titulo, autor FROM livros WHERE id = ?", param).Scan(&livro.ID, &livro.Titulo, &livro.Autor)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(404, gin.H{
+				"error": "livro não encontrado " + err.Error(),
+			})
+		} else {
+			c.JSON(500, gin.H{
+				"error": "livro não pode ser encontrado " + err.Error(),
+			})
+		}
+		return
+	}
+
+	var emprestimo models.Emprestimo
+
+	if err := c.BindJSON(&emprestimo); err != nil {
+		c.JSON(400, gin.H{"error": "cannot bind JSON: " + err.Error()})
+		return
+	}
+
+	emprestimo.Livro = livro
+	emprestimo.Usuario = usuario
+
+	result, err := db.Exec(
+  		// id INTEGER PRIMARY KEY,
+        // id_livro INTEGER NOT NULL,
+        // id_usuario INTEGER NOT NULL,
+        // data_emprestimo DATE,
+        // data_devolucao DATE,
+		"INSERT INTO emprestimos (id_livro, id_usuario, data_emprestimo, data_devolucao) VALUES (?, ?, ?, ?)",
+		emprestimo.Livro.ID,
+		emprestimo.Usuario.ID,
+		emprestimo.DataEmprestimo,
+		emprestimo.DataDevolucao,
+	)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Não foi possivel criar o Emprestimo: " + err.Error()})
+		return
+	}
+
+	lastID, err := result.LastInsertId()
+	if err != nil {
+		c.JSON(400, gin.H{"error": "cannot retrieve last insert ID: " + err.Error()})
+		return
+	}
+	emprestimo.ID = int(lastID)
+
+	c.JSON(200, emprestimo)
+}
