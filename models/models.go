@@ -17,8 +17,16 @@ type Usuario struct {
 
 type Emprestimo struct {
 	ID        int `json:"ID"`
-	Livro     Livro `json:"Livro"`
-	Usuario   Usuario`json:"Usuario"`
-	DataEmprestimo time.Time
-	DataDevolucao time.Time
+	Livro     Livro
+	Usuario   Usuario
+	DataEmprestimo time.Time `json:"data_emprestimo"`
+	DataDevolucao time.Time `json:"data_devolucao"`
+}
+
+type Emprestimo_ struct {
+	ID        int `json:"ID"`
+	Livro     string `json:"titulo"`
+	Email   string `json:"email"`
+	DataEmprestimo time.Time `json:"data_emprestimo"`
+	DataDevolucao time.Time `json:"data_devolucao"`
 }

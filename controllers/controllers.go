@@ -259,6 +259,17 @@ func GetEmprestimos(c *gin.Context) {
 			})
 			return
 		}
+		emprestimo.Livro.ID = livroId
+		if err := db.QueryRow("SELECT id, nome, email, telefone FROM usuarios WHERE id = ?", usuarioId).Scan(
+			&emprestimo.Usuario.ID,
+			&emprestimo.Usuario.Nome,
+			&emprestimo.Usuario.Email,
+			&emprestimo.Usuario.Telefone); err != nil {
+			c.JSON(500, gin.H{
+				"error": "Não foi possivel selecionar o emprestimo Usuario não encontrado: " + err.Error(),
+			})
+			return
+		}
 		emprestimos = append(emprestimos, emprestimo)
 	}
 
@@ -277,7 +288,10 @@ func GetEmprestimosByUsuario(c *gin.Context) {
 	param := c.Param("usuario")
 	var usuario models.Usuario
 	db := database.GetDB()
-	err := db.QueryRow("SELECT id, nome, email, telefone FROM usuarios WHERE nome = ?", param).Scan(&usuario.ID, &usuario.Nome, &usuario.Email, &usuario.Telefone)
+	err := db.QueryRow("SELECT id, nome, email, telefone FROM usuarios WHERE nome = ?", param).Scan(&usuario.ID,
+	&usuario.Nome,
+	&usuario.Email,
+	&usuario.Telefone)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -313,7 +327,8 @@ func GetEmprestimosByUsuario(c *gin.Context) {
 			})
 			return
 		}
-		if err := db.QueryRow("SELECT titulo, autor FROM livros WHERE id = ?", livroId).Scan(&emprestimo.Livro.Titulo, &emprestimo.Livro.Autor); err != nil {
+		if err := db.QueryRow("SELECT titulo, autor FROM livros WHERE id = ?", livroId).Scan(&emprestimo.Livro.Titulo,
+			&emprestimo.Livro.Autor); err != nil {
 			c.JSON(500, gin.H{
 				"error": "Não foi possivel selecionar o emprestimo: " + err.Error(),
 			})
@@ -340,10 +355,20 @@ func GetEmprestimosByUsuario(c *gin.Context) {
 }
 
 func CreateGetEmprestimos(c *gin.Context) {
-	param := c.Param("usuario")
+	var emprestimo_ models.Emprestimo_
+
+	if err := c.BindJSON(&emprestimo_); err != nil {
+		c.JSON(400, gin.H{"error": "cannot bind JSON: " + err.Error()})
+		return
+	}
+
 	var usuario models.Usuario
 	db := database.GetDB()
-	err := db.QueryRow("SELECT id, nome, email, telefone FROM usuarios WHERE nome = ?", param).Scan(&usuario.ID, &usuario.Nome, &usuario.Email, &usuario.Telefone)
+	err := db.QueryRow("SELECT id, nome, email, telefone FROM usuarios WHERE email = ?", emprestimo_.Email).Scan(
+		&usuario.ID,
+		&usuario.Nome,
+		&usuario.Email,
+		&usuario.Telefone)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			c.JSON(404, gin.H{
@@ -356,9 +381,8 @@ func CreateGetEmprestimos(c *gin.Context) {
 		}
 		return
 	}
-	param = c.Param("titulo")
 	var livro models.Livro
-	err = db.QueryRow("SELECT id, titulo, autor FROM livros WHERE id = ?", param).Scan(&livro.ID, &livro.Titulo, &livro.Autor)
+	err = db.QueryRow("SELECT id, titulo, autor FROM livros WHERE titulo = ?", emprestimo_.Livro).Scan(&livro.ID, &livro.Titulo, &livro.Autor)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			c.JSON(404, gin.H{
@@ -373,14 +397,10 @@ func CreateGetEmprestimos(c *gin.Context) {
 	}
 
 	var emprestimo models.Emprestimo
-
-	if err := c.BindJSON(&emprestimo); err != nil {
-		c.JSON(400, gin.H{"error": "cannot bind JSON: " + err.Error()})
-		return
-	}
-
 	emprestimo.Livro = livro
 	emprestimo.Usuario = usuario
+	emprestimo.DataEmprestimo = emprestimo_.DataEmprestimo
+	emprestimo.DataDevolucao = emprestimo_.DataDevolucao
 
 	result, err := db.Exec(
   		// id INTEGER PRIMARY KEY,
