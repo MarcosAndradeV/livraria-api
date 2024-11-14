@@ -2,13 +2,15 @@ package main
 
 import (
 	"log"
+	"time"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/secure"
+
+	"github.com/livraria/api/controllers"
 	"github.com/livraria/api/database"
 	"github.com/livraria/api/models"
-	"github.com/livraria/api/controllers"
 )
-
-
 
 var livros []models.Livro
 
@@ -17,6 +19,18 @@ func main() {
 	defer database.CloseDB()
 
 	router := gin.Default()
+	router.Use(cors.New(cors.Config{
+        AllowOrigins:     []string{"*"},
+        AllowMethods:     []string{"POST", "GET", "DELETE"},
+        AllowHeaders:     []string{"Origin"},
+        ExposeHeaders:    []string{"Content-Length", "Content-Type"},
+        AllowCredentials: true,
+        MaxAge: 12 * time.Hour,
+    }))
+	router.Use(secure.New(secure.Config{
+    ContentSecurityPolicy: "default-src 'self'; connect-src 'self'",
+}))
+
 
 	router.GET("/api/livros/", controllers.GetLivros)
 	router.GET("/api/livros/:id", controllers.GetLivro)
@@ -32,8 +46,7 @@ func main() {
 	router.GET("/api/emprestimos/", controllers.GetEmprestimos)
 	router.GET("/api/emprestimos/:usuario", controllers.GetEmprestimosByUsuario)
 	router.POST("/api/emprestimos/create/:usuario/:titulo", controllers.CreateGetEmprestimos)
-    // router.DELETE("/api/livros/:id", controllers.DeleteLivro)
-
+	// router.DELETE("/api/livros/:id", controllers.DeleteLivro)
 
 	log.Println("Server is starting on port 8000...")
 	router.Run(":8000")
