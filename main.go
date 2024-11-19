@@ -3,9 +3,10 @@ package main
 import (
 	"log"
 	"time"
+
 	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/secure"
+	"github.com/gin-gonic/gin"
 
 	"github.com/livraria/api/controllers"
 	"github.com/livraria/api/database"
@@ -17,17 +18,16 @@ func main() {
 
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
-        AllowOrigins:     []string{"*"},
-        AllowMethods:     []string{"POST", "GET", "DELETE"},
-        AllowHeaders:     []string{"Origin"},
-        ExposeHeaders:    []string{"Content-Length", "Content-Type"},
-        AllowCredentials: true,
-        MaxAge: 12 * time.Hour,
-    }))
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"POST", "GET", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 	router.Use(secure.New(secure.Config{
-    ContentSecurityPolicy: "default-src 'self'; connect-src 'self'",
-}))
-
+		ContentSecurityPolicy: "default-src 'self'; connect-src 'self'",
+	}))
 
 	router.GET("/api/livros/", controllers.GetLivros)
 	router.GET("/api/livros/:id", controllers.GetLivro)
