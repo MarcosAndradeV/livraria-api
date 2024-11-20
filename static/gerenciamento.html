@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Biblioteca</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a href="busca.html" > Busca </a>
+    <!-- Conteúdo principal -->
+    <div class="container" id="main-content">
+        <h1>Gerenciamento de Biblioteca</h1>
+
+        <!-- Formulário de cadastro de livro -->
+        <div class="form-section">
+            <h2>Cadastrar Livro</h2>
+            <input type="text" id="titulo" placeholder="Título do livro" required>
+            <input type="text" id="autor" placeholder="Autor do livro" required>
+            <button onclick="adicionarLivro()">Adicionar Livro</button>
+        </div>
+
+        <!-- Formulário de cadastro de usuário -->
+        <div class="form-section">
+            <h2>Cadastrar Usuário</h2>
+            <input type="text" id="nome" placeholder="Nome do usuário" required>
+            <input type="email" id="email" placeholder="Email do usuário" required>
+            <input type="tel" id="telefone" placeholder="Telefone do usuário" required>
+            <button onclick="adicionarUsuario()">Adicionar Usuário</button>
+        </div>
+
+        <!-- Formulário de cadastro de empréstimo -->
+        <div class="form-section">
+            <h2>Realizar Empréstimo</h2>
+            <input type="email" id="usuario" placeholder="Email do usuário" required>
+            <input type="text" id="titulo-livro" placeholder="Nome do livro" required>
+            <input type="date" id="data-emprestimo" placeholder="Data do empréstimo" required>
+            <input type="date" id="data-devolucao" placeholder="Data de devolução" required>
+            <button onclick="criarEmprestimo()">Registrar Empréstimo</button>
+        </div>
+
+        <!-- Visualização de dados -->
+        <div id="visualizacao-section" class="visualizacao-section" style="display: none;">
+            <h2 id="titulo-visualizacao" class="titulo-visualizacao"></h2>
+            <ul id="lista-visualizacao" class="lista-visualizacao"></ul>
+            <button onclick="fecharVisualizacao()">Fechar</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
