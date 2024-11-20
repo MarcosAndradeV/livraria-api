@@ -1,20 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Inicial</title>
-    <link rel="stylesheet" href="index.css">
+    <title>Biblioteca - Página Inicial</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .buttons {
+            margin-top: 20px;
+        }
+
+        .buttons a {
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 16px;
+            color: white;
+            background-color: #007BFF;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .buttons a:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Seja Bem-Vindo!</h1>
-    <br>    
-        <li>
-            <a href="busca.html">Busca</a>
-        </li>
-    <br>
-    <li>
-        <a href="gerenciamento.html">Gerenciamento</a>
-    </li>
+    <div class="container">
+        <h1>Bem-vindo à Biblioteca</h1>
+        <p>Escolha uma ação para começar:</p>
+        <div class="buttons">
+            <a href="busca.html">Página de busca</a>
+            <a href="gerenciamento.html">Página de gerenciamento</a>
+        </div>
+    </div>
 </body>
+
 </html>
