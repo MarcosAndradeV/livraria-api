@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Biblioteca</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Barra Lateral Fixa -->
+    <div class="container" id="main-content">
+        <h3>Buscar</h3>
+        <!-- Campo de busca com botão -->
+        <input type="text" id="search" placeholder="Pesquisar...">
+        <button id="search-btn" onclick="search()">Buscar</button>
+
+        <h3>Ações</h3>
+        <button onclick="mostrarUsuarios()">Exibir Usuários</button>
+        <button onclick="mostrarLivros()">Exibir Livros</button>
+        <button onclick="mostrarEmprestimos()">Exibir Empréstimos</button>
+
+        <h3>Resultados</h3>
+        <ul id="search-results"></ul>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
