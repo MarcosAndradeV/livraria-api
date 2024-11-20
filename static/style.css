@@ -1,0 +1,92 @@
+/* Estilos principais */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    display: flex;
+    height: 100vh;
+}
+
+/* Conteúdo principal */
+.container {
+    margin-right: 0; /* Inicialmente sem margem à direita */
+    padding: 20px;
+    flex-grow: 1;
+}
+
+/* Sidebar fixa no lado direito */
+.sidebar {
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: #333;
+    color: white;
+    padding-top: 20px;
+    padding-right: 20px;
+    transition: right 0.3s ease;
+    padding-left: 15px;
+}
+
+.sidebar h3 {
+    color: white;
+    margin-top: 0;
+}
+
+/* Botões na sidebar */
+.sidebar button {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.sidebar button:hover {
+    background-color: #45a049;
+}
+
+/* Campo de busca */
+#search {
+    width: 90%;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#search-results {
+    list-style-type: none;
+    padding: 0;
+}
+
+#search-results li {
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    color: black;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px; /* Largura da sidebar */
+    }
+}
+
+#search-results {
+    list-style-type: none; /* Remove marcadores da lista */
+    padding: 0;
+    margin: 0;
+    max-height: 300px; /* Define uma altura máxima */
+    overflow-y: auto; /* Ativa o scroll vertical quando necessário */
+    background-color: #f9f9f9; /* Fundo para separar visualmente os resultados */
+    border: 1px solid #ccc; /* Bordas para destacar a área */
+    border-radius: 5px;
+}

@@ -10,6 +10,7 @@ import (
 
 	"github.com/livraria/api/controllers"
 	"github.com/livraria/api/database"
+	"github.com/gin-gonic/contrib/static"
 )
 
 func main() {
@@ -26,9 +27,11 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 	router.Use(secure.New(secure.Config{
-		ContentSecurityPolicy: "default-src 'self'; connect-src 'self'",
+		// ContentSecurityPolicy: "default-src 'self'; connect-src 'self'",
+		ContentSecurityPolicy: "connect-src 'self'",
 	}))
 
+	router.Use(static.Serve("/", static.LocalFile("./static", true)))
 	router.GET("/api/livros/", controllers.GetLivros)
 	router.GET("/api/livros/:id", controllers.GetLivro)
 	router.GET("/api/livros/titulo/:title", controllers.GetLivroByTitle)
