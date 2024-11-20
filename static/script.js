@@ -128,11 +128,16 @@ async function mostrarUsuarios() {
     try {
         const response = await fetch('http://localhost:8000/api/usuarios/');
         if (response.ok) {
-            const usuarios = await response.json();
+            const usuarios_ = await response.json();
+            const usuarios = usuarios_ == null ? [] : usuarios_
             const lista = document.getElementById('search-results');
+          if (usuarios.length == 0) {
+            lista.innerHTML = "<li>Nenhum resultado encontrado.</li>"
+          } else {
             lista.innerHTML = usuarios.map(usuario =>
-                `<li><strong>Nome:</strong> ${usuario.Nome}, <strong>Email:</strong> ${usuario.Email}, <strong>Telefone:</strong> ${usuario.Telefone}</li>`
+              `<li><strong>Nome:</strong> ${usuario.Nome}, <strong>Email:</strong> ${usuario.Email}, <strong>Telefone:</strong> ${usuario.Telefone}</li>`
             ).join('');
+          }
         } else {
             console.error("Erro ao carregar a lista de usuários.");
             alert("Erro ao carregar a lista de usuários.");
@@ -148,11 +153,16 @@ async function mostrarLivros() {
     try {
         const response = await fetch('http://localhost:8000/api/livros/');
         if (response.ok) {
-            const livros = await response.json();
+            const livros_ = await response.json();
+            const livros = livros_ == null ? [] : livros_
             const lista = document.getElementById('search-results');
+          if (livros.length == 0) {
+            lista.innerHTML = "<li>Nenhum resultado encontrado.</li>"
+          } else {
             lista.innerHTML = livros.map(livro =>
-                `<li><strong>Título:</strong> ${livro.titulo}, <strong>Autor:</strong> ${livro.autor}</li>`
+              `<li><strong>Título:</strong> ${livro.titulo}, <strong>Autor:</strong> ${livro.autor}</li>`
             ).join('');
+          }
         } else {
             alert("Erro ao carregar a lista de livros.");
         }
@@ -167,11 +177,16 @@ async function mostrarEmprestimos() {
     try {
         const response = await fetch('http://localhost:8000/api/emprestimos/');
         if (response.ok) {
-            const emprestimos = await response.json();
+            const emprestimos_ = await response.json();
+            const emprestimos = emprestimos_ == null ? [] : emprestimos_
             const lista = document.getElementById('search-results');
-            lista.innerHTML = emprestimos.map(emprestimo =>
-                `<li><strong>Usuário:</strong> ${emprestimo.Usuario.Nome}, <strong>Livro:</strong> ${emprestimo.Livro.titulo}</li>`
-            ).join('');
+            if (emprestimos.length == 0) {
+                lista.innerHTML = "<li>Nenhum resultado encontrado.</li>"
+            } else {
+              lista.innerHTML = emprestimos.map(emprestimo =>
+                  `<li><strong>Usuário:</strong> ${emprestimo.Usuario.Nome}, <strong>Livro:</strong> ${emprestimo.Livro.titulo}</li>`
+              ).join('');
+            }
         } else {
             alert("Erro ao carregar a lista de empréstimos.");
         }
@@ -193,8 +208,7 @@ async function search() {
             const usuarios_ = await responseUsuarios.json();
             const usuarios = usuarios_ == null ? [] : usuarios_
             usuarios.forEach(usuario => {
-              console.log(usuario)
-                if (true) {
+                if (usuario.Nome.toLowerCase().includes(query)) {
                     searchResults.push(
                         `<li><strong>Nome:</strong> ${usuario.Nome}, <strong>Email:</strong> ${usuario.Email}, <strong>Telefone:</strong> ${usuario.telefone}</li>`
                     );
