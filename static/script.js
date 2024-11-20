@@ -190,16 +190,13 @@ async function search() {
         // Buscar usuários
         const responseUsuarios = await fetch('http://localhost:8000/api/usuarios/');
         if (responseUsuarios.ok) {
-            const usuarios = await responseUsuarios.json();
+            const usuarios_ = await responseUsuarios.json();
+            const usuarios = usuarios_ == null ? [] : usuarios_
             usuarios.forEach(usuario => {
-                if (
-                  // usuario.nome.toLowerCase().includes(query) ||
-                    usuario.nome.includes(query) ||
-                    // usuario.email.toLowerCase().includes(query)
-                    usuario.email.includes(query)
-                ) {
+              console.log(usuario)
+                if (true) {
                     searchResults.push(
-                        `<li><strong>Nome:</strong> ${usuario.nome}, <strong>Email:</strong> ${usuario.email}, <strong>Telefone:</strong> ${usuario.telefone}</li>`
+                        `<li><strong>Nome:</strong> ${usuario.Nome}, <strong>Email:</strong> ${usuario.Email}, <strong>Telefone:</strong> ${usuario.telefone}</li>`
                     );
                 }
             });
@@ -210,7 +207,8 @@ async function search() {
         // Buscar livros
         const responseLivros = await fetch('http://localhost:8000/api/livros/');
         if (responseLivros.ok) {
-            const livros = await responseLivros.json();
+            const livros_ = await responseLivros.json();
+            const livros = livros_ == null ? [] : livros_
             livros.forEach(livro => {
                 if (
                     livro.titulo.toLowerCase().includes(query) ||
