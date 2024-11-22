@@ -1,10 +1,11 @@
 package database
+
 import (
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
-)
 
+	_ "github.com/mattn/go-sqlite3"
+)
 
 var db *sql.DB
 
@@ -42,7 +43,7 @@ func InitDB() {
         telefone TEXT
     );
     `
-   	_, err = db.Exec(createTableUsuariosStmt)
+	_, err = db.Exec(createTableUsuariosStmt)
 	if err != nil {
 		log.Printf("Error creating table: %v\nStatement: %s\n", err, createTableUsuariosStmt)
 	} else {
@@ -54,13 +55,13 @@ func InitDB() {
         id INTEGER PRIMARY KEY,
         id_livro INTEGER NOT NULL,
         id_usuario INTEGER NOT NULL,
-        data_emprestimo DATE,
-        data_devolucao DATE,
+        data_emprestimo TEXT,
+        data_devolucao TEXT,
         FOREIGN KEY (id_livro) REFERENCES livros(id),
         FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
     );
     `
-   	_, err = db.Exec(createTableEmprestimosStmt)
+	_, err = db.Exec(createTableEmprestimosStmt)
 	if err != nil {
 		log.Printf("Error creating table: %v\nStatement: %s\n", err, createTableEmprestimosStmt)
 	} else {
@@ -72,6 +73,6 @@ func GetDB() *sql.DB {
 	return db
 }
 
-func CloseDB(){
+func CloseDB() {
 	db.Close()
 }
